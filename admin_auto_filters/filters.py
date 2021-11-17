@@ -50,10 +50,9 @@ class AutocompleteFilter(admin.SimpleListFilter):
         if self.rel_model:
             model = self.rel_model
 
-        if DJANGO_VERSION >= (3, 2):
-            remote_field = model._meta.get_field(self.field_name)
-        else:
-            remote_field = model._meta.get_field(self.field_name).remote_field
+        remote_field = model._meta.get_field(self.field_name)
+        if DJANGO_VERSION < (3, 2) or isinstance(remote_field, ForeignObjectRel):
+            remote_field = remote_field.remote_field
 
         widget = AutocompleteSelect(remote_field,
                                     model_admin.admin_site,
